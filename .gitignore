@@ -1,0 +1,9 @@
+/target
+node_modules/
+dist/
+.venv/
+*.pem
+.DS_Store
+*.log
+.vscode/
+.env
