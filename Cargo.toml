@@ -1,10 +1,10 @@
 [package]
-name = "corvin_ascii_gen"
-version = "0.1.0"
+name = "ascii-art-generator"
+version = "1.0.0"
 edition = "2021"
 
 [[bin]]
-name = "corvin_ascii_gen"
+name = "ascii-art-generator"
 path = "src/main.rs"
 
 [dependencies]

@@ -21,7 +21,6 @@ function createWindow() {
   });
 
   mainWindow.loadFile(path.join(__dirname, '../public/index.html'));
-  mainWindow.webContents.openDevTools();
 }
 
 app.on('ready', createWindow);
@@ -40,7 +39,11 @@ ipcMain.handle('select-file', async () => {
 
 ipcMain.handle('generate-ascii', async (_event, options: any) => {
   return new Promise((resolve, reject) => {
-    const process = spawn('./target/release/corvin_ascii_gen', [
+    const binaryPath = process.env.NODE_ENV === 'production' 
+      ? path.join(path.dirname(process.execPath), 'resources', 'ascii-art-generator')
+      : path.join(__dirname, '../target/release/ascii-art-generator');
+    
+    const proc = spawn(binaryPath, [
       options.imagePath,
       '--width', options.width.toString(),
       ...(options.invert ? ['--invert'] : []),
@@ -49,17 +52,21 @@ ipcMain.handle('generate-ascii', async (_event, options: any) => {
     let output = '';
     let error = '';
 
-    process.stdout.on('data', (data) => {
+    proc.stdout.on('data', (data) => {
       output += data.toString();
     });
 
-    process.stderr.on('data', (data) => {
+    proc.stderr.on('data', (data) => {
       error += data.toString();
     });
 
-    process.on('close', (code) => {
+    proc.on('error', (err) => {
+      reject(new Error(`Failed to start ASCII generator: ${err.message}`));
+    });
+
+    proc.on('close', (code) => {
       if (code === 0) resolve(output);
-      else reject(new Error(error || 'Generation failed'));
+      else reject(new Error(error || `Generation failed with exit code ${code}`));
     });
   });
 });
