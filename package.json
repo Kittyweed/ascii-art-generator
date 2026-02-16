@@ -2,11 +2,14 @@
   "name": "ascii-art-generator",
   "version": "1.0.0",
   "description": "Turn images into ASCII art with this sleek desktop application",
-  "main": "dist/main.js",
+  "main": "public/main.js",
   "homepage": "./",
   "scripts": {
-    "dev": "concurrently \"npm run build:watch\" \"electron .\"",
-    "build": "tsc && cargo build --release",
+    "dev": "concurrently \"npm run build:watch\" \"npm run build:main:watch\" \"electron .\"",
+    "build": "npm run build:main && npm run build:renderer && cp src/App.css public/ && cargo build --release",
+    "build:main": "tsc -p tsconfig.main.json",
+    "build:main:watch": "tsc -p tsconfig.main.json --watch",
+    "build:renderer": "tsc",
     "build:watch": "tsc --watch",
     "start": "electron .",
     "pack": "npm run build && electron-builder --dir",
@@ -17,8 +20,9 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@types/node": "^25.2.3",
     "@types/react": "^18.2.37",
-    "@types/react-dom": "^18.2.15",
+    "@types/react-dom": "^18.3.7",
     "concurrently": "^8.2.1",
     "electron": "^27.0.0",
     "electron-builder": "^24.6.4",
@@ -28,7 +32,6 @@
     "appId": "com.ascii-art-generator.app",
     "productName": "ASCII Art Generator",
     "files": [
-      "dist/**/*",
       "public/**/*",
       "target/release/ascii-art-generator",
       "node_modules/**/*"
