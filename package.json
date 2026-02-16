@@ -4,7 +4,6 @@
   "description": "Turn images into ASCII art with this sleek desktop application",
   "main": "dist/main.js",
   "homepage": "./",
-  "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run build:watch\" \"electron .\"",
     "build": "tsc && cargo build --release",

@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron';
+const { contextBridge, ipcRenderer } = require('electron');
 
 interface ElectronAPI {
   selectFile: () => Promise<string | null>;
@@ -13,9 +13,3 @@ const electronAPI: ElectronAPI = {
 };
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI);
-
-declare global {
-  interface Window {
-    electronAPI: ElectronAPI;
-  }
-}

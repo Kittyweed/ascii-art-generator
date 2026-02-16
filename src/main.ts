@@ -1,13 +1,9 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
-import { spawn } from 'child_process';
-import { writeFileSync } from 'fs';
-import * as path from 'path';
-import { fileURLToPath } from 'url';
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { spawn } = require('child_process');
+const { writeFileSync } = require('fs');
+const path = require('path');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-let mainWindow: BrowserWindow | null;
+let mainWindow: any = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -37,8 +33,8 @@ ipcMain.handle('select-file', async () => {
   return result.filePaths[0] || null;
 });
 
-ipcMain.handle('generate-ascii', async (_event, options: any) => {
-  return new Promise((resolve, reject) => {
+ipcMain.handle('generate-ascii', async (_event: any, options: any) => {
+  return new Promise((resolve: any, reject: any) => {
     const binaryPath = process.env.NODE_ENV === 'production' 
       ? path.join(path.dirname(process.execPath), 'resources', 'ascii-art-generator')
       : path.join(__dirname, '../target/release/ascii-art-generator');
@@ -52,26 +48,26 @@ ipcMain.handle('generate-ascii', async (_event, options: any) => {
     let output = '';
     let error = '';
 
-    proc.stdout.on('data', (data) => {
+    proc.stdout.on('data', (data: any) => {
       output += data.toString();
     });
 
-    proc.stderr.on('data', (data) => {
+    proc.stderr.on('data', (data: any) => {
       error += data.toString();
     });
 
-    proc.on('error', (err) => {
+    proc.on('error', (err: any) => {
       reject(new Error(`Failed to start ASCII generator: ${err.message}`));
     });
 
-    proc.on('close', (code) => {
+    proc.on('close', (code: any) => {
       if (code === 0) resolve(output);
       else reject(new Error(error || `Generation failed with exit code ${code}`));
     });
   });
 });
 
-ipcMain.handle('save-file', async (_event, { content, defaultPath }: any) => {
+ipcMain.handle('save-file', async (_event: any, { content, defaultPath }: any) => {
   const result = await dialog.showSaveDialog(mainWindow!, {
     defaultPath,
     filters: [{ name: 'Text Files', extensions: ['txt'] }],
